@@ -291,6 +291,24 @@ async def startup_event():
 # -----------------------------------------------------------------------------
 # Endpoints
 # -----------------------------------------------------------------------------
+import markdown
+
+extensions = [
+    'pymdownx.superfences',
+    'pymdownx.highlight',
+    'pymdownx.arithmatex',
+    'pymdownx.inlinehilite'
+]
+
+extension_configs = {
+    "pymdownx.highlight": {
+        "linenums": True
+    },
+    'pymdownx.arithmatex': {
+        'generic': True
+    }
+}
+
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     """
@@ -298,7 +316,8 @@ async def chat_endpoint(request: ChatRequest):
     """
     try:
         answer = chat(request.query)
-        return {"answer": answer}
+        formatted_answer = markdown.markdown(answer, extensions=extensions, extension_configs=extension_configs)
+        return {"answer": formatted_answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
